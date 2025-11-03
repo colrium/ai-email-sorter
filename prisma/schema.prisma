@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?      @map("email_verified")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  categories    Category[]
+  gmailAccounts GmailAccount[]
+
+  @@map("users")
+}
+
+model GmailAccount {
+  id               String    @id @default(uuid())
+  userId           String    @map("user_id")
+  email            String
+  accessToken      String    @map("access_token")
+  refreshToken     String?   @map("refresh_token")
+  tokenExpiry      DateTime? @map("token_expiry")
+  scope            String?
+  isPrimary        Boolean   @default(false) @map("is_primary")
+  watchExpiration  DateTime? @map("watch_expiration")
+  historyId        String?   @map("history_id")
+  lastSyncedAt     DateTime? @map("last_synced_at")
+  syncStatus       String    @default("idle") @map("sync_status")
+  syncErrorMessage String?   @map("sync_error_message")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  emails           Email[]
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, email])
+  @@index([userId])
+  @@map("gmail_accounts")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  name        String
+  description String?
+  color       String?  @default("#1976d2")
+  icon        String?  @default("category")
+  emailCount  Int      @default(0) @map("email_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emails      Email[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("categories")
+}
+
+model Email {
+  id                        String           @id @default(uuid())
+  gmailAccountId            String           @map("gmail_account_id")
+  gmailMessageId            String           @map("gmail_message_id")
+  gmailThreadId             String?          @map("gmail_thread_id")
+  categoryId                String?          @map("category_id")
+  subject                   String?
+  from                      String
+  fromName                  String?          @map("from_name")
+  to                        String?
+  cc                        String?
+  bcc                       String?
+  replyTo                   String?          @map("reply_to")
+  date                      DateTime
+  snippet                   String?
+  bodyHtml                  String?          @map("body_html")
+  bodyText                  String?          @map("body_text")
+  attachmentCount           Int              @default(0) @map("attachment_count")
+  hasAttachments            Boolean          @default(false) @map("has_attachments")
+  labels                    String[]
+  isRead                    Boolean          @default(false) @map("is_read")
+  isStarred                 Boolean          @default(false) @map("is_starred")
+  isImportant               Boolean          @default(false) @map("is_important")
+  isArchivedInGmail         Boolean          @default(false) @map("is_archived_in_gmail")
+  isDeletedInGmail          Boolean          @default(false) @map("is_deleted_in_gmail")
+  unsubscribeLink           String?          @map("unsubscribe_link")
+  listUnsubscribeHeader     String?          @map("list_unsubscribe_header")
+  aiSummary                 String?          @map("ai_summary")
+  aiCategorizationReasoning String?          @map("ai_categorization_reasoning")
+  processingStatus          String           @default("pending") @map("processing_status")
+  processingError           String?          @map("processing_error")
+  importedAt                DateTime         @default(now()) @map("imported_at")
+  processedAt               DateTime?        @map("processed_at")
+  createdAt                 DateTime         @default(now()) @map("created_at")
+  updatedAt                 DateTime         @updatedAt @map("updated_at")
+  unsubscribedAt            DateTime?        @map("unsubscribed_at")
+  category                  Category?        @relation(fields: [categoryId], references: [id])
+  gmailAccount              GmailAccount     @relation(fields: [gmailAccountId], references: [id], onDelete: Cascade)
+  unsubscribeLogs           UnsubscribeLog[]
+
+  @@unique([gmailAccountId, gmailMessageId])
+  @@index([categoryId])
+  @@index([gmailAccountId])
+  @@index([date(sort: Desc)])
+  @@index([processingStatus])
+  @@map("emails")
+}
+
+model UnsubscribeLog {
+  id             String   @id @default(uuid())
+  emailId        String   @map("email_id")
+  unsubscribeUrl String   @map("unsubscribe_url")
+  status         String
+  method         String?
+  actions        String?
+  screenshot     String?
+  errorMessage   String?  @map("error_message")
+  createdAt      DateTime @default(now()) @map("created_at")
+  email          Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([emailId])
+  @@index([status])
+  @@map("unsubscribe_logs")
+}
+
+model JobLog {
+  id        String   @id @default(uuid())
+  jobType   String   @map("job_type")
+  jobId     String   @map("job_id")
+  status    String
+  payload   String?
+  result    String?
+  error     String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([jobType])
+  @@index([status])
+  @@index([createdAt])
+  @@map("job_logs")
+}
