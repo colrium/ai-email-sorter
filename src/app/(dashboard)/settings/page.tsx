@@ -100,7 +100,8 @@ export default function SettingsPage() {
     authUrl.searchParams.set("scope", scope);
     authUrl.searchParams.set("access_type", "offline");
     authUrl.searchParams.set("prompt", "consent");
-
+    console.log('Connecting to Google OAuth URL:', authUrl.toString());
+    console.log('Connecting to Google OAuth URL redirectUri:', redirectUri);
     // Redirect to Google OAuth
     window.location.href = authUrl.toString();
   };

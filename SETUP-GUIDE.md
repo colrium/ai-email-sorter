@@ -47,8 +47,8 @@ redis-cli --version
 ### 1. Clone Repository
 
 ```bash
-git clone <repository-url>
-cd ai-email-sorter
+git clone git@github.com:colrium/jump.ai-challenge.git ai-email-sorter-mutugi
+cd ai-email-sorter-mutugi
 ```
 
 ### 2. Install Dependencies
@@ -432,7 +432,7 @@ Verify BullMQ queues are processing:
 **Solution:**
 
 ```bash
-yarn run db:generate
+yarn run prisma:generate
 ```
 
 Then restart TypeScript server:
