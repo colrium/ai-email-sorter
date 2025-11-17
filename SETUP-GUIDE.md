@@ -47,8 +47,8 @@ redis-cli --version
 ### 1. Clone Repository
 
 ```bash
-git clone git@github.com:colrium/jump.ai-challenge.git ai-email-sorter-mutugi
-cd ai-email-sorter-mutugi
+git clone git@github.com:colrium/jump.ai-challenge.git jump-ai-challenge-mutugi
+cd jump-ai-challenge-mutugi
 ```
 
 ### 2. Install Dependencies

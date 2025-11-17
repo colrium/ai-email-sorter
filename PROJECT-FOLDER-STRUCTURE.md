@@ -1,7 +1,7 @@
 ## ** PROJECT FOLDER STRUCTURE **
 ```bash
 
-ai-email-sorter/
+jump-ai-challenge/
 ├── .dockerignore
 ├── .env
 ├── .env.example

@@ -19,10 +19,10 @@ This guide walks through deploying the AI Email Sorter app to production on Fly.
 
 ```bash
 # Create Fly Postgres app
-fly postgres create --name ai-email-sorter-db --region sea
+fly postgres create --name jump-ai-challenge-db --region sea
 
 # Get connection string
-fly postgres connect --app ai-email-sorter-db
+fly postgres connect --app jump-ai-challenge-db
 
 # Note the DATABASE_URL for later
 ```
@@ -31,10 +31,10 @@ fly postgres connect --app ai-email-sorter-db
 
 ```bash
 # Create Fly Redis (Upstash)
-fly redis create --name ai-email-sorter-redis --region sea
+fly redis create --name jump-ai-challenge-redis --region sea
 
 # Get Redis URL
-fly redis status ai-email-sorter-redis
+fly redis status jump-ai-challenge-redis
 
 # Note the REDIS_URL for later
 ```
@@ -44,7 +44,7 @@ fly redis status ai-email-sorter-redis
 Create `fly.toml` in project root:
 
 ```toml
-app = "ai-email-sorter"
+app = "jump-ai-challenge"
 primary_region = "sea"
 
 [build]
@@ -172,7 +172,7 @@ module.exports = nextConfig;
 ```bash
 # Set secrets in Fly.io
 fly secrets set DATABASE_URL="postgresql://..." \\
-  NEXTAUTH_URL="https://ai-email-sorter.fly.dev" \\
+  NEXTAUTH_URL="https://jump-ai-challenge.fly.dev" \\
   NEXTAUTH_SECRET="$(openssl rand -base64 32)" \\
   GOOGLE_CLIENT_ID="..." \\
   GOOGLE_CLIENT_SECRET="..." \\
@@ -186,7 +186,7 @@ fly secrets set DATABASE_URL="postgresql://..." \\
 
 ```bash
 # Connect to your Postgres database
-fly postgres connect --app ai-email-sorter-db
+fly postgres connect --app jump-ai-challenge-db
 
 # Or run migrations from local
 DATABASE_URL="your-production-db-url" yarn prisma migrate deploy
@@ -227,8 +227,8 @@ fly scale vm shared-cpu-2x --memory 2048
 
 In Google Cloud Console:
 
-- Add `https://ai-email-sorter.fly.dev/api/auth/callback/google`
-- Update JavaScript origins to include `https://ai-email-sorter.fly.dev`
+- Add `https://jump-ai-challenge.fly.dev/api/auth/callback/google`
+- Update JavaScript origins to include `https://jump-ai-challenge.fly.dev`
 
 ### 2. Set Up Cron Jobs
 
@@ -245,7 +245,7 @@ Or use Fly.io scheduled tasks:
 # In fly.toml
 [[cron]]
   schedule = "*/5 * * * *"  # Every 5 minutes
-  command = "curl https://ai-email-sorter.fly.dev/api/cron/sync-emails -H 'Authorization: Bearer $CRON_SECRET'"
+  command = "curl https://jump-ai-challenge.fly.dev/api/cron/sync-emails -H 'Authorization: Bearer $CRON_SECRET'"
 ```
 
 ### 3. Configure Monitoring
@@ -254,10 +254,10 @@ Or use Fly.io scheduled tasks:
 
 ```bash
 # View metrics
-fly dashboard ai-email-sorter
+fly dashboard jump-ai-challenge
 
 # Set up alerts
-fly alerts create --app ai-email-sorter
+fly alerts create --app jump-ai-challenge
 ```
 
 #### Advanced Monitoring (Optional)
@@ -270,10 +270,10 @@ fly alerts create --app ai-email-sorter
 
 ```bash
 # Automated Postgres backups (Fly does this automatically)
-fly postgres backup list --app ai-email-sorter-db
+fly postgres backup list --app jump-ai-challenge-db
 
 # Manual backup
-fly postgres backup create --app ai-email-sorter-db
+fly postgres backup create --app jump-ai-challenge-db
 ```
 
 ## Environment Variables Reference
@@ -325,7 +325,7 @@ After deployment, verify:
 
 ```bash
 # Check Chromium installation
-fly ssh console -a ai-email-sorter
+fly ssh console -a jump-ai-challenge
 chromium-browser --version
 
 # If missing, rebuild with proper Dockerfile
@@ -338,7 +338,7 @@ chromium-browser --version
 fly secrets list
 
 # Test connection
-fly ssh console -a ai-email-sorter
+fly ssh console -a jump-ai-challenge
 psql $DATABASE_URL
 ```
 
@@ -346,7 +346,7 @@ psql $DATABASE_URL
 
 ```bash
 # Check Redis status
-fly redis status ai-email-sorter-redis
+fly redis status jump-ai-challenge-redis
 
 # Test connection
 fly ssh console
@@ -372,23 +372,23 @@ fly scale vm shared-cpu-2x --memory 2048
 
 ```bash
 # Real-time logs
-fly logs -a ai-email-sorter
+fly logs -a jump-ai-challenge
 
 # Specific process
-fly logs -a ai-email-sorter --worker
+fly logs -a jump-ai-challenge --worker
 
 # Last 100 lines
-fly logs -a ai-email-sorter --lines 100
+fly logs -a jump-ai-challenge --lines 100
 ```
 
 ### SSH Access
 
 ```bash
 # SSH into container
-fly ssh console -a ai-email-sorter
+fly ssh console -a jump-ai-challenge
 
 # Run commands
-fly ssh console -a ai-email-sorter -C "yarn prisma studio"
+fly ssh console -a jump-ai-challenge -C "yarn prisma studio"
 ```
 
 ## Cost Estimation (Fly.io)
@@ -446,7 +446,7 @@ fly postgres update --plan performance-1
 
 ```bash
 # List releases
-fly releases -a ai-email-sorter
+fly releases -a jump-ai-challenge
 
 # Rollback to previous version
 fly releases rollback <version-number>
@@ -463,5 +463,5 @@ fly releases rollback <version-number>
 
 Your AI Email Sorter app should now be live and processing emails automatically! 
 
-Access your app at: https://ai-email-sorter.fly.dev
+Access your app at: https://jump-ai-challenge.fly.dev
 

@@ -240,7 +240,7 @@ async function checkStatus() {
     exec('flyctl status');
 
     console.log('\n Health Check\n');
-    const appName = 'ai-email-sorter'; // Update if different
+    const appName = 'jump-ai-challenge'; // Update if different
     exec(`curl -f https://${appName}.fly.dev/api/health || echo " Health check failed"`);
 
     console.log('\n Recent Logs\n');
